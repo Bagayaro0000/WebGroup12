@@ -1,0 +1,16 @@
+.custom-bg {
+  background-color: #62836f !important; 
+  color: #fff !important;               /* 白字 */
+}
+
+.custom-bg .navbar-nav .nav-link,
+.custom-bg .navbar-brand,
+.custom-bg .navbar-toggler {
+  color: #fff !important; /* 白字 */
+}
+
+.custom-bg .navbar-nav .nav-link.active {
+  font-weight: bold;
+  color: #1f6f3d !important;  /* 連結變深綠字 */
+  background: #fff !important; /* 背景反白 */
+}
