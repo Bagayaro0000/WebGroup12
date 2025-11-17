@@ -30,11 +30,11 @@ function nav_active($file) {
           </li>
           <!-- 改檔名 -->
           <li class="nav-item"> 
-            <a class="nav-link<?=nav_active('statusform.php')?>" href="statusform.php">學習成果</a>
+            <a class="nav-link<?=nav_active('CRUD.php')?>" href="CRUD.php">學習成果</a>
           </li>
           <!-- 改檔名 -->
           <li class="nav-item">
-            <a class="nav-link<?=nav_active('conferenceform.php')?>" href="conferenceform.php">人才搜尋</a>
+            <a class="nav-link<?=nav_active('search.php')?>" href="search.php">人才搜尋</a>
           </li>
           
         </ul>
