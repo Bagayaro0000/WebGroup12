@@ -1,8 +1,8 @@
 <?php
 
 ?>
-<footer class="footer mt-auto py-3 custom-bg">
-  <div class="container text-center">
+ <footer class="footer mt-auto py-3 custom-bg"><!-- margin-top:auto頁尾推到頁面底部 -->
+  <div class="container text-center"><!--文字置中-->
     <h4 class="mb-3">聯絡方式</h4>
     <p class="mb-1">如果對系學會有任何問題，請隨時與我聯繫：</p>
     <ul class="list-unstyled mb-0">

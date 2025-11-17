@@ -1,5 +1,5 @@
 <?php
-$servername = "localhost";
+$servername = "localhost";// localhost:3308 柔的資料庫是連結這個
 $dbname = "   ";
 $dbUsername = "root";
 $dbPassword = "";

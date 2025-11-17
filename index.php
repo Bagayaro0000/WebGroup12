@@ -5,11 +5,12 @@ include("header.php");
 
 <body>
 
-<div class="container py-5">
-  <div class="row justify-content-center">
+ <div class="container py-5"><!--內容置中並有左右邊距 py表示上下padding有足夠垂直空間 -->
+   <div class="row justify-content-center">  <!--建立一個橫列（row），並讓裡面的欄位置中對齊 -->
+
     <div class="col-md-6">
 
-      <div class="card p-4 shadow-sm">
+      <div class="card p-4 shadow-sm"> <!-- 加上微陰影 -->
         <h2 class="text-center mb-4">人才搜尋</h2>
     <!-- 人才搜尋頁面叫做search.php -->
         <form action="search.php" method="GET" class="input-group">
