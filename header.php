@@ -24,7 +24,7 @@ function nav_active($file) {
      </button> <!--漢堡選單 -->
 
       <div class="collapse navbar-collapse" id="navbarNav">
-         <ul class="navbar-nav me-auto mb-2 mb-lg-0"><!---me-auto：左側導覽連結:個人資料、學習成果、人才搜尋-->
+         <ul class="navbar-nav me-auto mb-2 mb-lg-0"><!--me-auto：左側導覽連結:個人資料、學習成果、人才搜尋-->
           <li class="nav-item">
             <a class="nav-link<?=nav_active('profile.php')?>" href="profile.php">個人資料</a>
           </li>
