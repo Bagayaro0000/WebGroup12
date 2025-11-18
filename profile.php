@@ -7,11 +7,11 @@ include("header.php");
      <div class="row gy-4">    <!--建立一個橫列，gy-4 表示 row 內的欄位之間有垂直間距 -->
 
         <!-- 圖片區 -->
-        <div class="col-md-6">
-            <div class="card ">
+        <div class="col-md-4">
+            <div class="card h-50">
                 <div class="row g-0">
                     <div>
-                        <img src="https://lh3.googleusercontent.com/sitesv/AAzXCkfF3zCHLxRGE1I_09erwoBv1S5gWEKpXYQH7mGboX4xChguWuJ02RF4sf3wgvgwxphSl7zGpVkoJwbfKvyr5fWhxLC_3Qabh2PWMlCbvWXzEQFP1vGM36K1jUe8AODVBy5J5yxFz7vMEvVowUgROAf-jXaWbxOhLUBXfhwLbVDPnUjGMj3W0nzXtfxa3W66milgSKqbaOn3tqpaRHpFtqa6q8NV2Q=w1280" class="img-fluid rounded-start" alt="Image">
+                        <img src="https://lh3.googleusercontent.com/sitesv/AAzXCkdVxyqK2gHw4Om1wpXUk7Rspsgrvrp7AJKRBG59ubvzGFnp3t9RV_t3wfwrWUpbrTEVa8bj942AzUgXeu3s5UdbMOg7quFmF57nvfOIJ95_y7Ujz1XCoeFG8-fteBN9w3LUhbURjgsL3WPxiS2bmAWhko9mW4DGJws66eGvHN7C7DUs6c6a9jjn7EPwq8_Q1HFQq_KPjq4EJY0jUaKpnMh7YgdqoA=w1280" class="img-fluid rounded-start" alt="Image">
                     </div>
 
                 </div>
@@ -19,7 +19,7 @@ include("header.php");
         </div>
 
         <!-- 自我介紹區 -->
-        <div class="col-md-6">
+        <div class="col-md-8">
             <div class="card h-100">
                 <div class="row g-0">
                     
