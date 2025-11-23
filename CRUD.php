@@ -8,9 +8,14 @@ include("header.php");
 
         <!-- Card 1 -->
         <div class="col-md-6"><!--  區塊佔據頁面橫向尺寸，總共12格  -->
-             <div class="card h-100"><!--card元件建立，高度會塞滿 -->
-                <div class="card-header">擅長科目</div>
-                 <div class="card-body p-0"><!--p-0表示內容跟邊界=0 -->
+            <div class="card h-100 "><!--card元件建立，高度會塞滿 -->
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <!-- flex使span標題靠左  justify-content-between 中間會自動分開-->
+                    <span>擅長科目</span>
+                    <a id="擅長科目新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                </div>
+            
+                 <div class="card-body border border-2"><!--新增表格邊界 -->
                      <table class="table mb-0"><!-- margin-bottom表示表格底部不留空隙-->
                         <thead class="table-light">
                             <tr>
@@ -24,7 +29,10 @@ include("header.php");
                             <tr>
                                 <td>睡覺</td>
                                 <td>睡飽吃、吃飽睡</td>
-                                <td></td>
+                                <td>
+                                    <a  id="擅長科目編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
+                                    <a  id="擅長科目刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                </td>
                                 <td></td>
                             </tr>
                         </tbody>
@@ -36,8 +44,11 @@ include("header.php");
         <!-- Card 2 -->
         <div class="col-md-6">
             <div class="card h-100">
-                <div class="card-header">程式語言</div>
-                <div class="card-body p-0">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>程式語言</span>
+                    <a id="程式語言新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                </div>
+                <div class="card-body border border-2">
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
@@ -51,7 +62,10 @@ include("header.php");
                             <tr>
                                 <td>睡覺</td>
                                 <td>睡飽吃、吃飽睡</td>
-                                <td></td>
+                                <td>
+                                    <a  id="程式語言編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
+                                    <a  id="程式語言刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                </td>
                                 <td></td>
                             </tr>
                         </tbody>
@@ -63,8 +77,11 @@ include("header.php");
         <!-- Card 3 -->
         <div class="col-md-6">
             <div class="card h-100">
-                <div class="card-header">參與競賽</div>
-                <div class="card-body p-0">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>參與競賽</span>
+                    <a id="參與競賽新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                </div>
+                <div class="card-body border border-2">
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
@@ -78,7 +95,10 @@ include("header.php");
                             <tr>
                                 <td>睡覺</td>
                                 <td>睡飽吃、吃飽睡</td>
-                                <td></td>
+                                <td>
+                                    <a  id="參與競賽編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
+                                    <a  id="參與競賽刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                </td>
                                 <td></td>
                             </tr>
                         </tbody>
@@ -90,8 +110,11 @@ include("header.php");
         <!-- Card 4 -->
         <div class="col-md-6">
             <div class="card h-100">
-                <div class="card-header">取得證照</div>
-                <div class="card-body p-0">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span>取得證照</span>
+                    <a id="取得證照新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                </div>
+                <div class="card-body border border-2">
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
@@ -105,7 +128,10 @@ include("header.php");
                             <tr>
                                 <td>睡覺</td>
                                 <td>睡飽吃、吃飽睡</td>
-                                <td></td>
+                                <td>
+                                    <a  id="取得證照編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
+                                    <a  id="取得證照刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                </td>
                                 <td></td>
                             </tr>
                             
