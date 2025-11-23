@@ -45,10 +45,15 @@ function nav_active($file) {
             </li>
           <?php if (isset($_SESSION['user'])): ?>
             <li class="nav-item">
+            <!-- 做成假的nav-link不能點，為了'姓名+您好'對齊登出字樣-->
+            <a class="nav-link disabled text-white"> 
+            <?= htmlspecialchars($_SESSION['name']) ?> 您好
+            </a>
+            </li>
+            <li class="nav-item">
               <a class="nav-link" href="logout.php">登出</a> 
             </li>
           <?php else: ?>
-            <!-- 登入＋登入者姓名 -->
             <li class="nav-item">
               <a class="nav-link<?=nav_active('login.php')?>" href="login.php">登入</a>
             </li>

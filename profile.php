@@ -2,6 +2,8 @@
 include("header.php");
 ?>
 
+<!-- 照片上傳功能！！整個設計我還在想啊！！ -->
+
 <div class="container my-5">
     
      <div class="row gy-4">    <!--建立一個橫列，gy-4 表示 row 內的欄位之間有垂直間距 -->
@@ -11,7 +13,7 @@ include("header.php");
             <div class="card h-50">
                 <div class="row g-0"><!--欄間距=0-->
                     <div>
-                        <img src="https://lh3.googleusercontent.com/sitesv/AAzXCkdVxyqK2gHw4Om1wpXUk7Rspsgrvrp7AJKRBG59ubvzGFnp3t9RV_t3wfwrWUpbrTEVa8bj942AzUgXeu3s5UdbMOg7quFmF57nvfOIJ95_y7Ujz1XCoeFG8-fteBN9w3LUhbURjgsL3WPxiS2bmAWhko9mW4DGJws66eGvHN7C7DUs6c6a9jjn7EPwq8_Q1HFQq_KPjq4EJY0jUaKpnMh7YgdqoA=w1280" class="img-fluid rounded-start" alt="Image">
+                        <img src="https://lh3.googleusercontent.com/sitesv/AAzXCkdRhKNiAZXbkFiVAxlSURRnsbnMFFmNwJUlCybwQy_RY7F2kqwk4aPfGevT3iO32AokuWrbnPSdSOAC7lKt2tMDY_qhC2Wi0ygHRWnotkV-8NcdPulzxHNX0lnAgWvNfVdZGmUKaAmxwaUsyXNKfoSxGZjTNdWrUGYt5tnLOXH_8fKFTKj9kWvkT56A--ITcIjjJfC8QcIqCYNgWJwqItlAUwtMhg=w1280" class="img-fluid rounded-start" alt="Image">
                     </div>
 
                 </div>
