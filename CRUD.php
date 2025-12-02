@@ -1,5 +1,23 @@
 <?php
-include("header.php");
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
+require_once "header.php";
+require_once "db.php"; // 資料庫連線，變數 $conn 已經可用
+
+$subjects_table = 'proficient_subjects'; 
+$sql = "SELECT id, name, description, status FROM `{$subjects_table}`";
+$result = mysqli_query($conn, $sql);
+if ($result) {
+    // 獲取所有行，並設定為關聯陣列 (MYSQLI_ASSOC)
+    $proficient_subjects = mysqli_fetch_all($result, MYSQLI_ASSOC);
+    
+    // 釋放結果集佔用的記憶體
+    mysqli_free_result($result);
+} else {
+    // 查詢失敗時，設定為空陣列以避免 foreach 警告
+    $proficient_subjects = [];
+}
 ?>
 
 <div class="container" style="margin-top: 70px;">
@@ -19,6 +37,7 @@ include("header.php");
                      <table class="table mb-0"><!-- margin-bottom表示表格底部不留空隙-->
                         <thead class="table-light">
                             <tr>
+                                <th>ID</th>
                                 <th>科目名稱</th>
                                 <th>簡述</th>
                                 <th>操作</th>
@@ -26,15 +45,18 @@ include("header.php");
                             </tr>
                         </thead>
                         <tbody>
+                            <?php foreach ($proficient_subjects as $proficient_subject): ?>
                             <tr>
-                                <td>睡覺</td>
-                                <td>睡飽吃、吃飽睡</td>
+                                <td><?=$proficient_subject['id'] ?></td>
+                                <td><?= htmlspecialchars($proficient_subject['name']) ?></td>
+                                <td><?= htmlspecialchars($proficient_subject['description'] ?? '') ?></td>
                                 <td>
-                                    <a  id="擅長科目編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
-                                    <a  id="擅長科目刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                    <a href="CRUD_update.php?id=<?= $proficient_subject['id'] ?>" class="btn btn-sm btn-warning">編輯</a>
+                                    <a href="CRUD_delete.php?id=<?= $proficient_subject['id'] ?>"class="btn btn-sm btn-danger">刪除 </a>
                                 </td>
-                                <td></td>
+                               <td><?= htmlspecialchars($proficient_subject['status'] ?? '') ?></td>
                             </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

@@ -13,7 +13,7 @@ include("header.php");
             <div class="card h-50">
                 <div class="row g-0"><!--欄間距=0-->
                     <div>
-                        <img src="https://lh3.googleusercontent.com/sitesv/AAzXCkdRhKNiAZXbkFiVAxlSURRnsbnMFFmNwJUlCybwQy_RY7F2kqwk4aPfGevT3iO32AokuWrbnPSdSOAC7lKt2tMDY_qhC2Wi0ygHRWnotkV-8NcdPulzxHNX0lnAgWvNfVdZGmUKaAmxwaUsyXNKfoSxGZjTNdWrUGYt5tnLOXH_8fKFTKj9kWvkT56A--ITcIjjJfC8QcIqCYNgWJwqItlAUwtMhg=w1280" class="img-fluid rounded-start" alt="Image">
+                        <img src="https://lh3.googleusercontent.com/sitesv/AAzXCkfDJ34ZICVy0QXwOaahBYSVj8B5GQxwsI5kBuog0BRrBWRB2mTn1RJtdeT1XkCKnh-xQHs1SjpIkAi-c1MGQP6K7b8-xCqF2l41wyWwcEEynJcas5e63tsk2bt8mKyYzQ8wI5pWXJc3hpJWYGIk8gWLBnCirqfCmZ5gy1ATzO7k8_99LXn2zQSzIsQL8UPXzCyGeS7RZydhI07bDTZlWSOtXPYenw=w1280" class="img-fluid rounded-start" alt="Image">
                     </div>
 
                 </div>
