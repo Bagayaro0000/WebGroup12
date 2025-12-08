@@ -1,55 +1,56 @@
 <?php
-include("header.php");
-include("db.php");
-?>
-<form method="get" action="CRUD_delete.php">
-    <label for="table_select">請選擇要刪除的資料類型:</label>
-    <select name="table" id="table_select">
-        <option value="">-- 請選擇 --</option>
-        <option value="proficient_subjects">擅長科目</option>
-        <option value="programming languages">程式語言</option>
-        <option value="competitions">參與競賽</option>
-        <option value="licenses">取得證照</option>
-        </select>
-    <button type="submit">刪除</button>
-</form>
-<?php
-$selected_table = $_GET['table'] ?? '';
-
-if ($selected_table) {
-    if ($selected_table === 'competitions') {
-        // 顯示競賽專用的表單
-        // 表單的 action 應該指向處理資料的檔案，例如 action="save_data.php"
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="competitions">';
-        echo '競賽名稱: <input type="text" name="name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
-        
-    } elseif ($selected_table === 'licenses') {
-        // 顯示證照專用的表單
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="licenses">';
-        echo '證照名稱: <input type="text" name="license_name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
-    }elseif ($selected_table === 'proficient_subjects') {
-        // 顯示擅長科目的表單 
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="proficient_subjects">';
-        echo '科目名稱: <input type="text" name="proficient_subjects_name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
-    }elseif ($selected_table === 'programming languages') {
-        // 顯示程式語言的表單 
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="programming languages">';
-        echo '程式語言名稱: <input type="text" name="programming languages_name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
-    }
+// CRUD_deleted.php
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
 }
-?>
-<?php
-include("footer.php");
+
+
+include("header.php");
+require_once "db.php";
+
+// 確認 GET 參數 id 和 table 是否存在
+if (isset($_GET['id']) && isset($_GET['table'])) {
+
+    $table = $_GET['table'];
+    $allowed_tables = ['proficient_subjects', 'programming_languages', 'competitions', 'licenses'];
+
+    if (!in_array($table, $allowed_tables)) {
+        $_SESSION['error'] = "無效的資料表";
+        header("Location: CRUD.php"); // 或原頁
+        exit();
+    }
+
+    $id = $_GET['id'];
+    if (!is_numeric($id)) {
+        $_SESSION['error'] = "無效的刪除 ID";
+        header("Location: CRUD.php"); // 或原頁
+        exit();
+    }
+
+    // 使用預處理語句刪除
+    $stmt = $conn->prepare("DELETE FROM `$table` WHERE id = ?");
+    $stmt->bind_param("i", $id);
+
+    if ($stmt->execute()) {
+        if ($stmt->affected_rows > 0) {
+            $_SESSION['message'] = "ID {$id} 刪除成功！";
+        } else {
+            $_SESSION['error'] = "找不到 ID {$id}，刪除失敗。";
+        }
+    } else {
+        $_SESSION['error'] = "刪除失敗：" . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+
+    // 刪除後回到原頁或指定頁
+    header("Location: CRUD.php"); // 改成你想回去的頁面
+    exit();
+
+} else {
+    $_SESSION['error'] = "無效的刪除請求：缺少 ID 或資料表。";
+    header("Location: CRUD.php"); // 改成你想回去的頁面
+    exit();
+}
 ?>

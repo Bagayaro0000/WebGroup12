@@ -1,55 +1,89 @@
 <?php
-include("header.php");
-include("db.php");
-?>
-<form method="get" action="CRUD_update.php">
-    <label for="table_select">請選擇要編輯的資料類型:</label>
-    <select name="table" id="table_select">
-        <option value="">-- 請選擇 --</option>
-        <option value="proficient_subjects">擅長科目</option>
-        <option value="programming languages">程式語言</option>
-        <option value="competitions">參與競賽</option>
-        <option value="licenses">取得證照</option>
-        </select>
-    <button type="submit">更改</button>
-</form>
-<?php
-$selected_table = $_GET['table'] ?? '';
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-if ($selected_table) {
-    if ($selected_table === 'competitions') {
-        // 顯示競賽專用的表單
-        // 表單的 action 應該指向處理資料的檔案，例如 action="save_data.php"
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="competitions">';
-        echo '競賽名稱: <input type="text" name="name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
-        
-    } elseif ($selected_table === 'licenses') {
-        // 顯示證照專用的表單
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="licenses">';
-        echo '證照名稱: <input type="text" name="license_name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
-    }elseif ($selected_table === 'proficient_subjects') {
-        // 顯示擅長科目的表單 
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="proficient_subjects">';
-        echo '科目名稱: <input type="text" name="proficient_subjects_name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
-    }elseif ($selected_table === 'programming languages') {
-        // 顯示程式語言的表單 
-        echo '<form action="save_data.php" method="post">';
-        echo '<input type="hidden" name="table" value="programming languages">';
-        echo '程式語言名稱: <input type="text" name="programming languages_name"><br>';
-        echo '<button type="submit">儲存</button>';
-        echo '</form>';
+
+include("header.php");
+require_once "db.php";
+
+// 檢查 GET 參數 id 和 table
+if (isset($_GET['id']) && isset($_GET['table'])) {
+    $id = $_GET['id'];
+    $table = $_GET['table'];
+    $allowed_tables = ['proficient_subjects', 'programming_languages', 'competitions', 'licenses'];
+
+    if (!is_numeric($id) || !in_array($table, $allowed_tables)) {
+        $_SESSION['error'] = "無效的修改請求";
+        header("Location: CRUD.php");
+        exit();
+    }
+
+    // 取出該筆資料
+    $stmt = $conn->prepare("SELECT * FROM `$table` WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $record = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$record) {
+        $_SESSION['error'] = "找不到該筆資料";
+        header("Location: CRUD.php");
+        exit();
+    }
+
+} else {
+    $_SESSION['error'] = "缺少 ID 或資料表";
+    header("Location: CRUD.php");
+    exit();
+}
+
+// 表單送出時更新資料
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // 依表格不同取得對應欄位
+    $name = $_POST['name'] ?? '';
+    $description = $_POST['description'] ?? '';
+
+    $stmt = $conn->prepare("UPDATE `$table` SET name=?, description=? WHERE id=?");
+    $stmt->bind_param("ssi", $name, $description, $id);
+
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "資料修改成功！";
+        $stmt->close();
+        $conn->close();
+        header("Location: CRUD.php");
+        exit();
+    } else {
+        $_SESSION['error'] = "修改失敗：" . $stmt->error;
     }
 }
 ?>
-<?php
-include("footer.php");
-?>
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <title>修改資料</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="container mt-5">
+    <h3>修改資料</h3>
+    <form method="POST">
+        <div class="mb-3">
+            <label class="form-label">名稱</label>
+            <input type="text" class="form-control" name="name" value="<?= htmlspecialchars($record['name']) ?>" required>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">簡述</label>
+            <textarea class="form-control" name="description" rows="6"><?= htmlspecialchars($record['description'] ?? '') ?></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary">確認修改</button>
+        <a href="CRUD.php" class="btn btn-secondary">返回</a>
+    </form>
+</div>
+</body>
+</html>

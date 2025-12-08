@@ -5,36 +5,54 @@ if (session_status() == PHP_SESSION_NONE) {
 require_once "header.php";
 require_once "db.php"; // 資料庫連線，變數 $conn 已經可用
 
+// === 狀態對應表 ===
+$status_map = [
+    1 => '未審核',
+    2 => '已審核',
+    3 => '未通過'
+];
+
+// 擅長科目查詢
 $subjects_table = 'proficient_subjects'; 
-$sql = "SELECT id, name, description, status FROM `{$subjects_table}`";
-$result = mysqli_query($conn, $sql);
-if ($result) {
-    // 獲取所有行，並設定為關聯陣列 (MYSQLI_ASSOC)
-    $proficient_subjects = mysqli_fetch_all($result, MYSQLI_ASSOC);
-    
-    // 釋放結果集佔用的記憶體
-    mysqli_free_result($result);
-} else {
-    // 查詢失敗時，設定為空陣列以避免 foreach 警告
-    $proficient_subjects = [];
-}
+$sql1 = "SELECT id, name, description, status FROM `{$subjects_table}`";
+$result1 = mysqli_query($conn, $sql1);
+$proficient_subjects = $result1 ? mysqli_fetch_all($result1, MYSQLI_ASSOC) : [];
+if ($result1) mysqli_free_result($result1);
+
+// 程式語言查詢  
+$programming_table = 'programming_languages';
+$sql2 = "SELECT id, name, description, status FROM `{$programming_table}`";
+$result2 = mysqli_query($conn, $sql2);
+$programming_languages = $result2 ? mysqli_fetch_all($result2, MYSQLI_ASSOC) : [];
+if ($result2) mysqli_free_result($result2);
+
+// 參與競賽查詢  
+$competitions_table = 'competitions';
+$sql3 = "SELECT id, name, description, status FROM `{$competitions_table}`";
+$result3 = mysqli_query($conn, $sql3);
+$competitions = $result3 ? mysqli_fetch_all($result3, MYSQLI_ASSOC) : [];
+if ($result3) mysqli_free_result($result3);
+
+// 取得證照查詢  
+$licenses_table = 'licenses';
+$sql4 = "SELECT id, name, description, status FROM `{$licenses_table}`";
+$result4 = mysqli_query($conn, $sql4);
+$licenses = $result4 ? mysqli_fetch_all($result4, MYSQLI_ASSOC) : [];
+if ($result4) mysqli_free_result($result4);
 ?>
 
 <div class="container" style="margin-top: 70px;">
-
     <div class="row gy-4">
 
-        <!-- Card 1 -->
-        <div class="col-md-6"><!--  區塊佔據頁面橫向尺寸，總共12格  -->
-            <div class="card h-100 "><!--card元件建立，高度會塞滿 -->
+        <!-- Card 1: 擅長科目 -->
+        <div class="col-md-6">
+            <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
-                    <!-- flex使span標題靠左  justify-content-between 中間會自動分開-->
                     <span>擅長科目</span>
-                    <a id="擅長科目新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
                 </div>
-            
-                 <div class="card-body border border-2"><!--新增表格邊界 -->
-                     <table class="table mb-0"><!-- margin-bottom表示表格底部不留空隙-->
+                <div class="card-body border border-2">
+                    <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
                                 <th>ID</th>
@@ -47,14 +65,14 @@ if ($result) {
                         <tbody>
                             <?php foreach ($proficient_subjects as $proficient_subject): ?>
                             <tr>
-                                <td><?=$proficient_subject['id'] ?></td>
+                                <td><?= $proficient_subject['id'] ?></td>
                                 <td><?= htmlspecialchars($proficient_subject['name']) ?></td>
                                 <td><?= htmlspecialchars($proficient_subject['description'] ?? '') ?></td>
                                 <td>
-                                    <a href="CRUD_update.php?id=<?= $proficient_subject['id'] ?>" class="btn btn-sm btn-warning">編輯</a>
-                                    <a href="CRUD_delete.php?id=<?= $proficient_subject['id'] ?>"class="btn btn-sm btn-danger">刪除 </a>
+                                    <a href="CRUD_update.php?table=proficient_subjects&id=<?= $proficient_subject['id'] ?>" class="btn btn-sm btn-warning">編輯</a>
+                                    <a href="CRUD_delete.php?table=proficient_subjects&id=<?= $proficient_subject['id'] ?>" class="btn btn-sm btn-danger">刪除</a>
                                 </td>
-                               <td><?= htmlspecialchars($proficient_subject['status'] ?? '') ?></td>
+                                <td><?= $status_map[$proficient_subject['status']] ?? '未知狀態' ?></td>
                             </tr>
                             <?php endforeach; ?>
                         </tbody>
@@ -63,17 +81,18 @@ if ($result) {
             </div>
         </div>
 
-        <!-- Card 2 -->
+        <!-- Card 2: 程式語言 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>程式語言</span>
-                    <a id="程式語言新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
                 </div>
                 <div class="card-body border border-2">
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
+                                <th>ID</th>
                                 <th>語言名稱</th>
                                 <th>簡述</th>
                                 <th>操作</th>
@@ -81,32 +100,36 @@ if ($result) {
                             </tr>
                         </thead>
                         <tbody>
+                            <?php foreach ($programming_languages as $language): ?>
                             <tr>
-                                <td>睡覺</td>
-                                <td>睡飽吃、吃飽睡</td>
+                                <td><?= $language['id'] ?></td>
+                                <td><?= htmlspecialchars($language['name']) ?></td>
+                                <td><?= htmlspecialchars($language['description'] ?? '') ?></td>
                                 <td>
-                                    <a  id="程式語言編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
-                                    <a  id="程式語言刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                    <a href="CRUD_update.php?table=programming_languages&id=<?= $language['id'] ?>" class="btn btn-sm btn-warning">編輯</a>
+                                    <a href="CRUD_delete.php?table=programming_languages&id=<?= $language['id'] ?>" class="btn btn-sm btn-danger">刪除</a>
                                 </td>
-                                <td></td>
+                                <td><?= $status_map[$language['status']] ?? '未知狀態' ?></td>
                             </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Card 3 -->
+        <!-- Card 3: 參與競賽 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>參與競賽</span>
-                    <a id="參與競賽新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
                 </div>
                 <div class="card-body border border-2">
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
+                                <th>ID</th>
                                 <th>競賽名稱</th>
                                 <th>簡述</th>
                                 <th>操作</th>
@@ -114,32 +137,36 @@ if ($result) {
                             </tr>
                         </thead>
                         <tbody>
+                            <?php foreach ($competitions as $competition): ?>
                             <tr>
-                                <td>睡覺</td>
-                                <td>睡飽吃、吃飽睡</td>
+                                <td><?= $competition['id'] ?></td>
+                                <td><?= htmlspecialchars($competition['name']) ?></td>
+                                <td><?= htmlspecialchars($competition['description'] ?? '') ?></td>
                                 <td>
-                                    <a  id="參與競賽編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
-                                    <a  id="參與競賽刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                    <a href="CRUD_update.php?table=competitions&id=<?= $competition['id'] ?>" class="btn btn-sm btn-warning">編輯</a>
+                                    <a href="CRUD_delete.php?table=competitions&id=<?= $competition['id'] ?>" class="btn btn-sm btn-danger">刪除</a>
                                 </td>
-                                <td></td>
+                                <td><?= $status_map[$competition['status']] ?? '未知狀態' ?></td>
                             </tr>
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>
             </div>
         </div>
 
-        <!-- Card 4 -->
+        <!-- Card 4: 取得證照 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>取得證照</span>
-                    <a id="取得證照新增" href="CRUD_insert.php" class="btn btn-primary">+</a>
+                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
                 </div>
                 <div class="card-body border border-2">
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
+                                <th>ID</th>
                                 <th>證照名稱</th>
                                 <th>簡述</th>
                                 <th>操作</th>
@@ -147,16 +174,18 @@ if ($result) {
                             </tr>
                         </thead>
                         <tbody>
+                            <?php foreach ($licenses as $license): ?>
                             <tr>
-                                <td>睡覺</td>
-                                <td>睡飽吃、吃飽睡</td>
+                                <td><?= $license['id'] ?></td>
+                                <td><?= htmlspecialchars($license['name']) ?></td>
+                                <td><?= htmlspecialchars($license['description'] ?? '') ?></td>
                                 <td>
-                                    <a  id="取得證照編輯" href="CRUD_update.php" class="btn btn-sm btn-warning">修改</a>
-                                    <a  id="取得證照刪除" href="CRUD_delete.php" class="btn btn-sm btn-danger">刪除</a>
+                                    <a href="CRUD_update.php?table=licenses&id=<?= $license['id'] ?>" class="btn btn-sm btn-warning">編輯</a>
+                                    <a href="CRUD_delete.php?table=licenses&id=<?= $license['id'] ?>" class="btn btn-sm btn-danger">刪除</a>
                                 </td>
-                                <td></td>
+                                <td><?= $status_map[$license['status']] ?? '未知狀態' ?></td>
                             </tr>
-                            
+                            <?php endforeach; ?>
                         </tbody>
                     </table>
                 </div>

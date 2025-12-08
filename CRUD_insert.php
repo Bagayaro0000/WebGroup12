@@ -5,7 +5,43 @@ if (session_status() == PHP_SESSION_NONE) {
 
 include("header.php");
 require_once "db.php"; 
+
+$selected_table = $_GET['table'] ?? '';
+
+// --- 表單送出處理 ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $table = $_POST['table'] ?? '';
+    $name = $_POST['name'] ?? '';
+    $description = $_POST['description'] ?? '';
+    
+    $allowed_tables = ['proficient_subjects','programming_languages','competitions','licenses'];
+    if (!in_array($table, $allowed_tables)) {
+        $_SESSION['error'] = "無效的資料表";
+        header("Location: CRUD.php");
+        exit();
+    }
+
+    // 預設 status=1（未審核）
+    $status = 1;
+
+    $stmt = $conn->prepare("INSERT INTO `$table` (name, description, status) VALUES (?, ?, ?)");
+    $stmt->bind_param("ssi", $name, $description, $status);
+
+    if ($stmt->execute()) {
+        $_SESSION['message'] = "新增成功！";
+    } else {
+        $_SESSION['error'] = "新增失敗：" . $stmt->error;
+    }
+
+    $stmt->close();
+    $conn->close();
+    header("Location: CRUD.php");
+    exit();
+}
 ?>
+
+<!-- --- 選擇資料類型表單 --- -->
+<?php if (!$selected_table): ?>
 <form method="get" action="CRUD_insert.php">
     <label for="table_select">請選擇要新增的資料類型:</label>
     <select name="table" id="table_select">
@@ -15,40 +51,27 @@ require_once "db.php";
         <option value="competitions">參與競賽</option>
         <option value="licenses">取得證照</option>
     </select>
-<button type="submit">新增</button>
+    <button type="submit">新增</button>
 </form>
-<?php
-$selected_table = $_GET['table'] ?? '';
+<?php endif; ?>
 
-if ($selected_table) {
-$form_start = '<form action="save_data.php" method="post">';
-$form_hidden = '<input type="hidden" name="table" value="' . htmlspecialchars($selected_table) . '">';
-$form_end = '<br>簡述: <textarea name="description" rows="3" cols="30"></textarea><br><button type="submit">儲存</button></form>';
-
-    if ($selected_table === 'competitions') {
-        echo $form_start . $form_hidden;
-        echo '競賽名稱: <input type="text" name="name" required>'; // 使用 name
-        echo $form_end;
-        
-    } elseif ($selected_table === 'licenses') {
-        echo $form_start . $form_hidden;
-        echo '證照名稱: <input type="text" name="license_name" required>'; // 使用 license_name
-        echo $form_end;
-        
-    } elseif ($selected_table === 'proficient_subjects') {
-        echo $form_start . $form_hidden;
-        echo '科目名稱: <input type="text" name="proficient_subjects_name" required>'; // 使用 proficient_subjects_name
-        echo $form_end;
-        
-    } elseif ($selected_table === 'programming_languages') { 
-        echo $form_start . $form_hidden;
-        echo '程式語言名稱: <input type="text" name="programming_languages_name" required>'; // 使用 programming_languages_name
-        echo $form_end;
-    } else {
-        echo '<p>請選擇有效的資料類型。</p>';
+<!-- --- 依資料類型生成新增表單 --- -->
+<?php if ($selected_table): 
+    $field_name = '';
+    switch($selected_table) {
+        case 'competitions': $field_name = '競賽名稱'; break;
+        case 'licenses': $field_name = '證照名稱'; break;
+        case 'proficient_subjects': $field_name = '科目名稱'; break;
+        case 'programming_languages': $field_name = '程式語言名稱'; break;
+        default: $field_name = '名稱'; break;
     }
-}
 ?>
-<?php
-include("footer.php");
-?>
+<form method="post">
+    <input type="hidden" name="table" value="<?= htmlspecialchars($selected_table) ?>">
+    <?= $field_name ?>: <input type="text" name="name" required><br>
+    簡述: <textarea name="description" rows="3" cols="30"></textarea><br>
+    <button type="submit">儲存</button>
+</form>
+<?php endif; ?>
+
+<?php include("footer.php"); ?>
