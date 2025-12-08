@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $title = $title ?? "成果認證展示系統";
 function nav_active($file) {
   $current = basename($_SERVER['PHP_SELF']);
