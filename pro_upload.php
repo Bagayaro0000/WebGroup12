@@ -7,6 +7,14 @@ ini_set('display_errors', 1);
 $conn = mysqli_connect("localhost","root","","WebGroup12");
 
 $user_account = $_SESSION['user'];
+//讀取資料，在我的表格的placeholder會顯示
+$sql2 = "SELECT email, description FROM user WHERE account='$user_account'";
+$result = mysqli_query($conn, $sql2);
+$row = mysqli_fetch_assoc($result);
+//form <value>
+$email = $row['email'];
+$description = $row['description'];
+
 
 if(isset($_POST['register']))
 {
@@ -39,7 +47,9 @@ if(isset($_POST['register']))
     $data = mysqli_query($conn, $sql);
 
     if($data){
-        echo "<script>alert('更新成功');</script>";
+        echo "<script>alert('更新成功');
+        window.location.href='profile.php';</script>";
+        exit();
     } else {
         echo mysqli_error($conn);
     }
@@ -54,39 +64,44 @@ if(isset($_POST['register']))
     <title></title>
 </head>
 <body>
-    <h2>upload your profile imformation on datedase.</h2>
-    <div>
-        <form action="pro_upload.php" method="POST" enctype="multipart/form-data">
-            <!-- <div>
-            <label>Name</label>
-            <input type="text" name="name">
-            </div>
-            <br><br> -->
+    <form action="pro_upload.php" method="POST" enctype="multipart/form-data">
+  <div class="container">
+        <h2>upload your profile imformation on datedase.</h2>
 
-            <div>
-            <label>Email</label>
-            <input type="email" name="email">
-            </div>
-            <br><br>
 
-            <div>
-            <label>Description</label>
-            <input type="description" name="description">
-            </div>
-            <br><br>
-
-            <div>
-            <input type="file" name="my_image">
-            </div>
-
-            <br><br>
-        
-            <div>
-            <input type="submit" name="register" value="register">
-            </div>
-
-        </form>
+    <!-- Email -->
+    <div class="mb-3 row">
+      <label for="_email" class="col-sm-2 col-form-label">Email</label>
+      <div class="col-sm-10">
+        <input type="email" name="email" class="form-control" id="_email"
+               placeholder="電子信箱" value="<?=$email?>" required>
+      </div>
     </div>
+
+    <!-- Description -->
+    <div class="mb-3 row">
+      <label for="_description" class="col-sm-2 col-form-label">Description</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="_description" name="description"
+                  rows="5" required><?=$description?></textarea>
+      </div>
+    </div>
+
+    <!-- File Upload -->
+    <div class="mb-3 row">
+      <label for="_image" class="col-sm-2 col-form-label">上傳圖片</label>
+      <div class="col-sm-10">
+        <input type="file" name="my_image" id="_image" class="form-control">
+      </div>
+    </div>
+
+    <!-- Submit -->
+    <input class="btn btn-success bold-text" type="submit" 
+    name="register" value="更新" style="font-weight:bold;">
+
+  </div>
+</form>
+
     
 </body>
 </html>

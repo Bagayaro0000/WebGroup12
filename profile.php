@@ -35,10 +35,11 @@ if (!$user) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile</title>
-
     <link rel="stylesheet" href="custom.css">
-    <style>
-.profile-photo {
+
+    <!-- 照片樣式 -->
+    <style> 
+    .profile-photo {
     width: 170px;
     height: 170px;
     object-fit: cover;
@@ -47,8 +48,9 @@ if (!$user) {
     display: block;
     margin: 10px auto;
     box-shadow: 0 3px 15px rgba(0,0,0,0.2);
-}
+    }
     </style>
+
 </head>
 
 <body>
@@ -58,18 +60,18 @@ if (!$user) {
 
         <!-- left side -->
          <div class="col-md-3">
-            <!-- <div class="card h-50"> -->
+          
                 <div class="row g-0">
                     <div>
                         <img src="uploads/<?php echo $user['image'] ?? 'default.png'; ?>" 
                         alt="Profile Photo"
                         class="profile-photo">
                     </div>
-                       <!-- 創建個人簡介按鈕，點了跳到pro_upload.php-->
+                    <!-- 創建個人簡介按鈕，點了跳到pro_upload.php-->
                 <a class="btn btn-success"
-            href="pro_upload.php?id=<?php echo $row['id'] ?>">創建個人簡介</a> 
-         </div>
-                <!-- </div> -->
+                href="pro_upload.php?id=<?php echo $row['id'] ?>">創建與更新</a> 
+                </div>
+               
             </div>
          
 
