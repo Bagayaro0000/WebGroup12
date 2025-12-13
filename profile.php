@@ -4,20 +4,19 @@
 
 
 <?php
-include("header.php");
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-$conn = mysqli_connect("localhost:3308", "root", "", "WebGroup12");
+require_once "db.php"; // 資料庫連線
 
 // 檢查是否已登入
-if (!isset($_SESSION['user'])) {
+if (!isset($_SESSION['account'])) {
     header("Location: login.php");
     exit();
 }
 
-$user_account = $_SESSION['user'];  // login.php 內存的是 account
+$user_account = $_SESSION['account'];  // login.php 內存的是 account
 
 // 使用 account 來查資料
 $sql = "SELECT * FROM `user` WHERE account='$user_account'";
@@ -28,6 +27,8 @@ if (!$user) {
     echo "找不到使用者資料！";
     exit();
 }
+include("header.php");
+
 ?>
 
 
@@ -71,7 +72,7 @@ if (!$user) {
                     </div>
                     <!-- 創建個人簡介按鈕，點了跳到pro_upload.php-->
                 <a class="btn btn-success"
-                href="pro_upload.php?id=<?php echo $row['id'] ?>">創建與更新</a> 
+                href="pro_upload.php?id=<?php echo $user['id'] ?>">創建與更新</a> 
                 </div>
                
             </div>
