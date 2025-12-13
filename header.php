@@ -45,7 +45,7 @@ function nav_active($file) {
             <li class="nav-item">
               <a class="nav-link" href="user_update.php">個人資料</a>
             </li>
-          <?php if (isset($_SESSION['user'])): ?>
+          <?php if (isset($_SESSION['account'])): ?>  <!--確保跟login的account一樣 -->
             <li class="nav-item">
             <!-- 做成假的nav-link不能點，為了'姓名+您好'對齊登出字樣-->
             <a class="nav-link disabled text-white"> 

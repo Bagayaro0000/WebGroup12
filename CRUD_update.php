@@ -46,8 +46,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $description = $_POST['description'] ?? '';
 
     $stmt = $conn->prepare("UPDATE `$table` SET name=?, description=? WHERE id=?");
+    //向資料庫發送 SQL 語句， SET name=?, description=? 指定要更新的欄位
     $stmt->bind_param("ssi", $name, $description, $id);
-
+    //ssi 對應的是$name,$description,$id，資料表中內容替換掉?的部分
     if ($stmt->execute()) {
         $_SESSION['message'] = "資料修改成功！";
         $stmt->close();

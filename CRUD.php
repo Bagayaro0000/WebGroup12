@@ -3,55 +3,72 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 require_once "header.php";
-require_once "db.php"; // 資料庫連線，變數 $conn 已經可用
+require_once "db.php"; // 資料庫連線
 
-// === 狀態對應表 ===
+//獲取當前登入的帳號
+$current_account = $_SESSION['account'] ?? null;
+
+// 檢查是否登入
+if (!$current_account) {
+    // 如果未登入，強制跳轉到登入頁面
+    $_SESSION['error'] = "請先登入才能查看資料。";
+    header("Location: login.php");
+    exit();
+}
+
+//status對應表
 $status_map = [
     1 => '未審核',
-    2 => '已審核',
+    2 => '已審核', // 建議未來可以改成 '已通過'
     3 => '未通過'
 ];
 
+function execute_account_query($conn, $table_name, $account) {
+    // 資料隔離
+    $sql = "SELECT id, name, description, status FROM `{$table_name}` WHERE account = ?";
+    // 使用預備語句 (Prepared Statement) 增加安全性
+    $stmt = $conn->prepare($sql);
+    // 綁定當前登入的帳號參數
+    $stmt->bind_param("s", $account);
+    $stmt->execute();
+    
+    $result = $stmt->get_result();
+    $data = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+    
+    $stmt->close();
+    return $data;
+}
+
 // 擅長科目查詢
-$subjects_table = 'proficient_subjects'; 
-$sql1 = "SELECT id, name, description, status FROM `{$subjects_table}`";
-$result1 = mysqli_query($conn, $sql1);
-$proficient_subjects = $result1 ? mysqli_fetch_all($result1, MYSQLI_ASSOC) : [];
-if ($result1) mysqli_free_result($result1);
+$proficient_subjects = execute_account_query($conn, 'proficient_subjects', $current_account);
 
-// 程式語言查詢  
-$programming_table = 'programming_languages';
-$sql2 = "SELECT id, name, description, status FROM `{$programming_table}`";
-$result2 = mysqli_query($conn, $sql2);
-$programming_languages = $result2 ? mysqli_fetch_all($result2, MYSQLI_ASSOC) : [];
-if ($result2) mysqli_free_result($result2);
+// 程式語言查詢
+$programming_languages = execute_account_query($conn, 'programming_languages', $current_account);
 
-// 參與競賽查詢  
-$competitions_table = 'competitions';
-$sql3 = "SELECT id, name, description, status FROM `{$competitions_table}`";
-$result3 = mysqli_query($conn, $sql3);
-$competitions = $result3 ? mysqli_fetch_all($result3, MYSQLI_ASSOC) : [];
-if ($result3) mysqli_free_result($result3);
+// 參與競賽查詢
+$competitions = execute_account_query($conn, 'competitions', $current_account);
 
-// 取得證照查詢  
-$licenses_table = 'licenses';
-$sql4 = "SELECT id, name, description, status FROM `{$licenses_table}`";
-$result4 = mysqli_query($conn, $sql4);
-$licenses = $result4 ? mysqli_fetch_all($result4, MYSQLI_ASSOC) : [];
-if ($result4) mysqli_free_result($result4);
+// 取得證照查詢
+$licenses = execute_account_query($conn, 'licenses', $current_account);
 ?>
 
 <div class="container" style="margin-top: 70px;">
     <div class="row gy-4">
 
-        <!-- Card 1: 擅長科目 -->
+        <?php if (isset($_SESSION['message'])): ?>
+            <div class="alert alert-success mt-3"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
+        <?php endif; ?>
+
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>擅長科目</span>
-                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
-                </div>
+                    <a href="CRUD_insert.php?table=proficient_subjects" class="btn btn-primary">+</a> 
+                    </div>
                 <div class="card-body border border-2">
+                    <?php if (empty($proficient_subjects)): ?>
+                        <p class="text-center text-muted m-3">您尚未新增任何擅長科目資料。</p>
+                    <?php else: ?>
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
@@ -77,18 +94,21 @@ if ($result4) mysqli_free_result($result4);
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
-        <!-- Card 2: 程式語言 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>程式語言</span>
-                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
+                    <a href="CRUD_insert.php?table=programming_languages" class="btn btn-primary">+</a>
                 </div>
                 <div class="card-body border border-2">
+                     <?php if (empty($programming_languages)): ?>
+                        <p class="text-center text-muted m-3">您尚未新增任何程式語言資料。</p>
+                    <?php else: ?>
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
@@ -114,18 +134,21 @@ if ($result4) mysqli_free_result($result4);
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
-        <!-- Card 3: 參與競賽 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>參與競賽</span>
-                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
+                    <a href="CRUD_insert.php?table=competitions" class="btn btn-primary">+</a>
                 </div>
                 <div class="card-body border border-2">
+                    <?php if (empty($competitions)): ?>
+                        <p class="text-center text-muted m-3">您尚未新增任何參與競賽資料。</p>
+                    <?php else: ?>
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
@@ -151,18 +174,21 @@ if ($result4) mysqli_free_result($result4);
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
 
-        <!-- Card 4: 取得證照 -->
         <div class="col-md-6">
             <div class="card h-100">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <span>取得證照</span>
-                    <a href="CRUD_insert.php" class="btn btn-primary">+</a>
+                    <a href="CRUD_insert.php?table=licenses" class="btn btn-primary">+</a>
                 </div>
                 <div class="card-body border border-2">
+                    <?php if (empty($licenses)): ?>
+                        <p class="text-center text-muted m-3">您尚未新增任何取得證照資料。</p>
+                    <?php else: ?>
                     <table class="table mb-0">
                         <thead class="table-light">
                             <tr>
@@ -188,6 +214,7 @@ if ($result4) mysqli_free_result($result4);
                             <?php endforeach; ?>
                         </tbody>
                     </table>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>

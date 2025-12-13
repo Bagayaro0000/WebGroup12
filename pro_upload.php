@@ -4,7 +4,7 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-$conn = mysqli_connect("localhost","root","","WebGroup12");
+$conn = mysqli_connect("localhost:3308","root","","WebGroup12");
 
 $user_account = $_SESSION['user'];
 //讀取資料，在我的表格的placeholder會顯示

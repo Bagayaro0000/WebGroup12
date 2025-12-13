@@ -21,7 +21,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         $row = mysqli_fetch_assoc($result);
 
         // 存
-        $_SESSION['user'] = $row['account']; 
+        $_SESSION['account'] = $row['account']; //從user更改成account
         $_SESSION['name'] = $row['name'];
         $_SESSION['role'] = $row['role'];
 

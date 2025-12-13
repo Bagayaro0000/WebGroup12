@@ -5,9 +5,11 @@
 
 <?php
 include("header.php");
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
-$conn = mysqli_connect("localhost", "root", "", "WebGroup12");
+$conn = mysqli_connect("localhost:3308", "root", "", "WebGroup12");
 
 // 檢查是否已登入
 if (!isset($_SESSION['user'])) {
