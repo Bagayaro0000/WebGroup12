@@ -38,12 +38,15 @@ function nav_active($file) {
           <li class="nav-item">
             <a class="nav-link<?=nav_active('search.php')?>" href="search.php">人才搜尋</a>
           </li>
+          <li class="nav-item">
+            <a class="nav-link<?=nav_active('teacher_backend.php')?>" href="teacher_backend.php">審核</a>
+          </li>
           
         </ul>
 
          <ul class="navbar-nav ms-auto mb-2 mb-lg-0"> <!--ms-auto：右側導覽連結:個人資料、登入/登出-->
             <li class="nav-item">
-              <a class="nav-link" href="user_update.php">個人資料</a>
+              <a class="nav-link" href="user_pw.php">用戶帳密？</a>
             </li>
           <?php if (isset($_SESSION['account'])): ?>  <!--確保跟login的account一樣 -->
             <li class="nav-item">
