@@ -1,12 +1,13 @@
 <?php
-include("header.php");
 session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 require_once "db.php"; // 資料庫連線
+include("header.php");
 
-$user_account = $_SESSION['user'];
+
+$user_account = $_SESSION['account'];
 //讀取資料，在我的表格的placeholder會顯示
 $sql2 = "SELECT email, description FROM user WHERE account='$user_account'";
 $result = mysqli_query($conn, $sql2);
