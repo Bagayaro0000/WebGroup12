@@ -33,13 +33,13 @@ if(isset($_POST['register']))
         move_uploaded_file($_FILES['my_image']["tmp_name"], $uploadspath);
     }
 
-    // 有上傳圖片 → 更新 email, description, image
+    // 有上傳圖片>>更新 email, description, image
     if ($newfilename != "") {
         $sql = "UPDATE user 
                 SET email = '$email',description = '$description',image = '$newfilename'
                 WHERE account='$user_account'";
     } 
-    // 沒上傳圖片 → 不更新 image
+    // 沒上傳圖片>>不更新 image
     else {
         $sql = "UPDATE user SET email = '$email',description = '$description'
                 WHERE account='$user_account'";
