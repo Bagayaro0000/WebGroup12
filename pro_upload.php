@@ -3,18 +3,20 @@ session_start();
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once "db.php"; // 資料庫連線
+require_once "db.php"; // 資料庫連線PDO
 include("header.php");
 
 
 $user_account = $_SESSION['account'];
 //讀取資料，在我的表格的placeholder會顯示
-$sql2 = "SELECT email, description FROM user WHERE account='$user_account'";
-$result = mysqli_query($conn, $sql2);
-$row = mysqli_fetch_assoc($result);
+$sql2 = "SELECT email, description FROM user WHERE account=:account";
+$stmt2= $pdo->prepare($sql2);
+$stmt2->execute([':account'=>$user_account]);
+$row = $stmt2->fetch();
+
 //form <value>
-$email = $row['email'];
-$description = $row['description'];
+$email = $row['email']??'';
+$description = $row['description']??'';
 
 
 if(isset($_POST['register']))
@@ -34,27 +36,41 @@ if(isset($_POST['register']))
     }
 
     // 有上傳圖片>>更新 email, description, image
-    if ($newfilename != "") {
+    try{
+      if ($newfilename != "") {
         $sql = "UPDATE user 
-                SET email = '$email',description = '$description',image = '$newfilename'
-                WHERE account='$user_account'";
-    } 
-    // 沒上傳圖片>>不更新 image
-    else {
-        $sql = "UPDATE user SET email = '$email',description = '$description'
-                WHERE account='$user_account'";
-    }
+                SET email = :email, description = :desc, image = :img
+                WHERE account=:acc";
+        $params=[
+          ':email' => $email,
+          ':desc'  => $description,
+          ':img'   => $newfilename,
+          ':acc'   => $user_account
+        ];
+      } else{
+         $sql = "UPDATE user 
+                SET email = :email, description = :desc
+                WHERE account=:acc";
+        $params=[
+          ':email' => $email,
+          ':desc'  => $description,
+          ':acc'   => $user_account
+        ];
+      }
+      $stmt = $pdo->prepare($sql);
+      $success = $stmt->execute($params);
 
-    $data = mysqli_query($conn, $sql);
-
-    if($data){
-        echo "<script>alert('更新成功');
+      if($success){
+        echo"<script>alert('更新成功');
         window.location.href='profile.php';</script>";
         exit();
-    } else {
-        echo mysqli_error($conn);
+      }
+    }catch(PDOException $e){
+      echo "更新失敗：".$e->getMessage();
     }
-}
+
+  }
+
 ?>
 
 <!DOCTYPE html>

@@ -2,31 +2,31 @@
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
-include 'db.php'; 
+include 'db.php'; // 確保這裡是 PDO 連線
 
 $table_name = $_POST['table'] ?? '';
 $description = $_POST['description'] ?? '';
+$current_account = $_SESSION['account'] ?? null; // 建議也把帳號存進去，確保資料歸屬
 
-if ($table_name === 'competitions') {
-    $data_name = $_POST['competitions_name'] ?? '';
-    $sql = "INSERT INTO competitions (name, description, status) VALUES (?, ?, 1)";
-    $types = "ss";
+// 檢查是否登入
+if (!$current_account) {
+    $_SESSION['error'] = "請先登入。";
+    header("Location: login.php");
+    exit();
+}
 
-} elseif ($table_name === 'licenses') {
-    $data_name = $_POST['license_name'] ?? '';
-    $sql = "INSERT INTO licenses (name, description, status) VALUES (?, ?, 1)";
-    $types = "ss";
+// 根據 table 決定對應的 POST 欄位名稱
+$post_keys = [
+    'competitions' => 'competitions_name',
+    'licenses' => 'license_name',
+    'proficient_subjects' => 'proficient_subjects_name',
+    'programming_languages' => 'programming_languages_name'
+];
 
-} elseif ($table_name === 'proficient_subjects') {
-    $data_name = $_POST['proficient_subjects_name'] ?? '';
-    $sql = "INSERT INTO proficient_subjects (name, description, status) VALUES (?, ?, 1)";
-    $types = "ss";
-    
-} elseif ($table_name === 'programming_languages') {
-    $data_name = $_POST['programming_languages_name'] ?? '';
-    $sql = "INSERT INTO programming_languages (name, description, status) VALUES (?, ?, 1)";
-    $types = "ss";
-
+if (array_key_exists($table_name, $post_keys)) {
+    $data_name = $_POST[$post_keys[$table_name]] ?? '';
+    // SQL 改寫：記得把 account 也存進去，這樣 CRUD.php 才看得到
+    $sql = "INSERT INTO `$table_name` (name, description, status, account) VALUES (?, ?, 1, ?)";
 } else {
     $_SESSION['error'] = "錯誤: 未知的資料類型。";
     header("Location: CRUD.php");
@@ -34,16 +34,20 @@ if ($table_name === 'competitions') {
 }
 
 if (!empty($data_name)) {
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param($types, $data_name, $description);
+    try {
+        // --- PDO 改寫開始 ---
+        $stmt = $pdo->prepare($sql);
+        // 執行時直接帶入陣列，順序要跟 SQL 的 ? 一致
+        $success = $stmt->execute([$data_name, $description, $current_account]);
 
-    if ($stmt->execute()) {
-        $_SESSION['message'] = "資料新增成功！";
-    } else {
-        $_SESSION['error'] = "資料新增失敗：" . $stmt->error;
+        if ($success) {
+            $_SESSION['message'] = "資料新增成功！";
+        } else {
+            $_SESSION['error'] = "資料新增失敗。";
+        }
+    } catch (PDOException $e) {
+        $_SESSION['error'] = "資料庫錯誤：" . $e->getMessage();
     }
-    $stmt->close();
-
 } else {
     $_SESSION['error'] = "主要名稱欄位不能為空。";
 }

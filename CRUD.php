@@ -3,7 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 require_once "header.php";
-require_once "db.php"; // 資料庫連線
+require_once "db.php"; // 資料庫連線改成pdo
 
 //獲取當前登入的帳號
 $current_account = $_SESSION['account'] ?? null;
@@ -23,33 +23,29 @@ $status_map = [
     3 => '未通過'
 ];
 
-function execute_account_query($conn, $table_name, $account) {
+function execute_account_query($pdo, $table_name, $account) {
     // 資料隔離
-    $sql = "SELECT id, name, description, status FROM `{$table_name}` WHERE account = ?";
+    $sql = "SELECT id, name, description, status FROM `{$table_name}` WHERE account = :acc";
     // 使用預備語句 (Prepared Statement) 增加安全性
-    $stmt = $conn->prepare($sql);
-    // 綁定當前登入的帳號參數
-    $stmt->bind_param("s", $account);
-    $stmt->execute();
+    $stmt = $pdo->prepare($sql);
+    // 執行與帶入參數
+    $stmt->execute([':acc'=>$account]);
     
-    $result = $stmt->get_result();
-    $data = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
-    
-    $stmt->close();
-    return $data;
+    //fetchALL一次取出所有結果
+    return $stmt->fetchALL();
 }
-
+//呼叫$conn改成$pdo
 // 擅長科目查詢
-$proficient_subjects = execute_account_query($conn, 'proficient_subjects', $current_account);
+$proficient_subjects = execute_account_query($pdo, 'proficient_subjects', $current_account);
 
 // 程式語言查詢
-$programming_languages = execute_account_query($conn, 'programming_languages', $current_account);
+$programming_languages = execute_account_query($pdo, 'programming_languages', $current_account);
 
 // 參與競賽查詢
-$competitions = execute_account_query($conn, 'competitions', $current_account);
+$competitions = execute_account_query($pdo, 'competitions', $current_account);
 
 // 取得證照查詢
-$licenses = execute_account_query($conn, 'licenses', $current_account);
+$licenses = execute_account_query($pdo, 'licenses', $current_account);
 ?>
 
 <div class="container" style="margin-top: 70px;">

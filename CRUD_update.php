@@ -5,7 +5,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 
 include("header.php");
-require_once "db.php";
+require_once "db.php"; //PDO連線
 
 // 檢查 GET 參數 id 和 table
 if (isset($_GET['id']) && isset($_GET['table'])) {
@@ -20,12 +20,12 @@ if (isset($_GET['id']) && isset($_GET['table'])) {
     }
 
     // 取出該筆資料
-    $stmt = $conn->prepare("SELECT * FROM `$table` WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $record = $result->fetch_assoc();
-    $stmt->close();
+    $stmt = $pdo->prepare("SELECT * FROM `$table` WHERE id = ?");
+    $stmt->execute([$id]);
+    
+    
+    $record = $stmt->fetch();
+    
 
     if (!$record) {
         $_SESSION['error'] = "找不到該筆資料";
@@ -45,14 +45,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name = $_POST['name'] ?? '';
     $description = $_POST['description'] ?? '';
 
-    $stmt = $conn->prepare("UPDATE `$table` SET name=?, description=? WHERE id=?");
+    $stmt = $pdo->prepare("UPDATE `$table` SET name=:name, description=:desc WHERE id=:id");
     //向資料庫發送 SQL 語句， SET name=?, description=? 指定要更新的欄位
-    $stmt->bind_param("ssi", $name, $description, $id);
-    //ssi 對應的是$name,$description,$id，資料表中內容替換掉?的部分
-    if ($stmt->execute()) {
+    $success = $stmt->execute([
+        ':name' => $name,
+        ':desc' => $description,
+        ':id'   => $id
+    ]);
+    //ssi 對應的是$name,$description,$id，資料表中內容替換掉?的部分(舊的註解)
+    if ($success) {
         $_SESSION['message'] = "資料修改成功！";
-        $stmt->close();
-        $conn->close();
         header("Location: CRUD.php");
         exit();
     } else {

@@ -6,7 +6,7 @@ if (session_status() == PHP_SESSION_NONE) {
 
 
 include("header.php");
-require_once "db.php";
+require_once "db.php"; //pdo
 
 // 確認 GET 參數 id 和 table 是否存在
 if (isset($_GET['id']) && isset($_GET['table'])) { //確認GEt請求中是否同時包含id和table
@@ -25,23 +25,20 @@ if (isset($_GET['id']) && isset($_GET['table'])) { //確認GEt請求中是否同
         header("Location: CRUD.php"); 
         exit();
     }
-
+    //affected_rows 的 PDO 對等寫法是 rowCount()
     // 使用預處理語句刪除
-    $stmt = $conn->prepare("DELETE FROM `$table` WHERE id = ?");
-    $stmt->bind_param("i", $id);
+    $stmt = $pdo->prepare("DELETE FROM `$table` WHERE id = ?");
+    $stmt->execute([$id]);
 
+    //rowCount()檢查受影響的列述
     if ($stmt->execute()) {
-        if ($stmt->affected_rows > 0) { //檢查刪除操作影響的行數是否大於 0
+        if ($stmt->rowCount() > 0) { //檢查刪除操作影響的行數是否大於 0
             $_SESSION['message'] = "ID {$id} 刪除成功！";
         } else {
             $_SESSION['error'] = "找不到 ID {$id}，刪除失敗。";
         }
-    } else {
-        $_SESSION['error'] = "刪除失敗：" . $stmt->error;
-    }
+    } 
 
-    $stmt->close();
-    $conn->close();
 
     // 刪除後回到CRUD.php頁
     header("Location: CRUD.php"); 

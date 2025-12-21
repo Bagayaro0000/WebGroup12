@@ -8,7 +8,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 
-require_once "db.php"; // 資料庫連線
+require_once "db.php"; // 資料庫連線PDO
 
 // 檢查是否已登入
 if (!isset($_SESSION['account'])) {
@@ -18,10 +18,11 @@ if (!isset($_SESSION['account'])) {
 
 $user_account = $_SESSION['account'];  // login.php 內存的是 account
 
-// 使用 account 來查資料
-$sql = "SELECT * FROM `user` WHERE account='$user_account'";
-$result = mysqli_query($conn, $sql);
-$user = mysqli_fetch_assoc($result);
+// 使用 account 來查資料，改成PDO
+$sql = "SELECT * FROM `user` WHERE account=:account";
+$stmt = $pdo->prepare($sql);
+$stmt->execute([':account' => $user_account]);
+$user = $stmt->fetch();
 
 if (!$user) {
     echo "找不到使用者資料！";
@@ -72,7 +73,7 @@ include("header.php");
                     </div>
                     <!-- 創建個人簡介按鈕，點了跳到pro_upload.php-->
                 <a class="btn btn-success"
-                href="pro_upload.php?id=<?php echo $user['id'] ?>">創建與更新</a> 
+                href="pro_upload.php?id=<?php echo $user['account'] ?>">創建與更新</a> 
                 </div>
                
             </div>
@@ -89,7 +90,7 @@ include("header.php");
                             <ul class="list-group list-group-flush fs-5">
 
                                 <li class="list-group-item d-flex justify-content-between">
-                                    <strong>Name</strong>
+                                    <strong>姓名</strong>
                                     <span><?php echo $user['name']; ?></span>
                                 </li>
 

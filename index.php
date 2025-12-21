@@ -1,6 +1,5 @@
 <?php
 include("header.php");
-//require_once 'db.php'; // 連接資料庫
 ?>
 
 <body>
@@ -31,6 +30,5 @@ include("header.php");
 
 
 <?php
-//mysqli_close($conn); // 關閉資料庫
 include("footer.php");
 ?>

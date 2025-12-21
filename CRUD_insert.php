@@ -4,7 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 
 include("header.php");
-require_once "db.php"; 
+require_once "db.php"; //PDO
 
 $selected_table = $_GET['table'] ?? '';//將 $_GET['table'] 變數的值賦給 $selected_table
 
@@ -31,19 +31,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // 預設 status=1（未審核）
+    // 預設 status=1（未審核） //insert sql 修改成pdo
     $status = 1;
-    $stmt = $conn->prepare("INSERT INTO `$table` (name, description, status, account) VALUES (?, ?, ?, ?)");
-    $stmt->bind_param("ssis", $name, $description, $status, $current_account);
-
-    if ($stmt->execute()) {
+    $sql = "INSERT INTO `$table` (name, description, status, account) VALUES (?, ?, ?, ?)";
+    $stmt = $pdo->prepare($sql);
+    //按順序將參數放到execute陣列中
+    if ($stmt->execute([$name, $description, $status, $current_account])) {
         $_SESSION['message'] = "新增成功！資料已綁定至帳號 {$current_account}。";
     } else {
         $_SESSION['error'] = "新增失敗：" . $stmt->error;
     }
 
-    $stmt->close();
-    $conn->close();
     header("Location: CRUD.php");
     exit();
 }
