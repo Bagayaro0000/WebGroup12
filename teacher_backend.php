@@ -3,7 +3,7 @@ if (session_status() == PHP_SESSION_NONE) {
     session_start();
 }
 require_once "header.php";
-require_once "db.php"; // 資料庫連線
+require_once "db.php"; // 資料庫連線pdo
 
 //權限
 if(!isset($_SESSION['account'])|| ($_SESSION['role']??'')!=='T'){
@@ -19,29 +19,34 @@ $tables=[
     'licenses'=>'證照'
 ];
 
-//處理審查按鈕作業
+//處理審查按鈕作業 pdo
 if(isset($_GET['action'],$_GET['table'],$_GET['id'])){
     $action=$_GET['action'];//approve //reject
     $table=$_GET['table'];
     $id=(int)$_GET['id'];
     if(!array_key_exists($table,$tables)){
-        die("error table");
+        die("無效資料表");
     }
     if($action==='approve'){
         $status=2;
     }elseif($action==='reject'){
         $status=3;
     }else{
-        die("error");
+        die("無效操作");
     }
-
-    $sql="UPDATE `$table` SET status = ? WHERE id = ?";
-    $stmt=$conn->prepare($sql);
-    $stmt->bind_param("ii",$status,$id); //整數整數
-    $stmt->execute();
+try{
+    $sql="UPDATE `$table` SET status = :status WHERE id = :id";
+    $stmt=$pdo->prepare($sql);
+    $stmt->execute([
+        ':status' =>$status,
+        ':id' => $id
+    ]);
 
     header("Location:teacher_backend.php");
     exit();
+    }catch(PDOException $e){
+        die("更新失敗：".$e->getMessage());
+    }
 }
 
 //未審核的成果
@@ -49,10 +54,12 @@ $data=[];
 
 foreach($tables as $table=>$label){
     $sql = "SELECT id, account, name, description, status FROM `$table`
-            WHERE status = 1";
-    $result=$conn->query($sql);
+            WHERE status = 1"  ;
+    $stmt=$pdo->query($sql);
 
-    while ($row=$result->fetch_assoc()){
+    $row=$stmt->fetchALL();
+
+    foreach ($row as $row){
         $row['table']=$table;
         $row['type']=$label;
         $data[]=$row;
@@ -65,7 +72,7 @@ foreach($tables as $table=>$label){
 
 
 <div class="container my-5">
-    <h2 class="mb-4">後台|成果審核</h2>
+    <h2 class="mb-4">後台 | 成果審核</h2>
 
     <!-- 沒有審核資料 -->
      <?php if(empty($data)):?>

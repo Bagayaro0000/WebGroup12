@@ -3,25 +3,27 @@ session_start();
 include("header.php");
 
 
-require_once "db.php"; // 請確認這個檔案裡有 mysqli_connect()
+require_once "db.php"; 
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $user = $_POST['user'] ?? '';
     $pass = $_POST['pass'] ?? '';
 
-    // 避免sql injection
-    $user = mysqli_real_escape_string($conn, $user);
-    $pass = mysqli_real_escape_string($conn, $pass);
+    //改寫成PDO
+    try{
+      $sql = "SELECT * FROM user WHERE account=:user AND password=:pass limit 1 ";
+      $stmt = $pdo->prepare($sql);
 
-    // 查詢資料庫帳號密碼
-    $sql = "SELECT * FROM user WHERE account='$user' AND password='$pass' ";
-    $result = mysqli_query($conn, $sql);
+      //prevent sql injection
+      $stmt->execute([
+        ':user'=> $user,
+        ':pass' => $pass
+      ]);
 
-    if ($result && mysqli_num_rows($result) === 1) {
-        $row = mysqli_fetch_assoc($result);
-
-        // 存
-        $_SESSION['account'] = $row['account']; //從user更改成account
+      //get data
+      $row = $stmt->fetch();   // db.php >> fetch_assoc. 陣列
+      if($row){ // login success and set in SESSION
+        $_SESSION['account'] = $row['account'];
         $_SESSION['name'] = $row['name'];
         $_SESSION['role'] = $row['role'];
 
@@ -35,9 +37,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         header("Location: index.php");
         exit;
-    } else {
+      }else {
         $error = "帳號或密碼錯誤！";
-    }
+      }
+}catch(PDOException $e){
+  $error="系統錯誤：".$e->getMessage();
+}
 }
 ?>
 

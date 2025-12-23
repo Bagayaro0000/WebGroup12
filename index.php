@@ -14,7 +14,7 @@ include("header.php");
         <h2 class="text-center mb-4">人才搜尋</h2>
     <!-- 人才搜尋頁面叫做search.php -->
         <form action="search.php" method="GET" class="input-group">
-          <input type="search" name="q" class="form-control"
+          <input type="text" name="keyword" class="form-control"
                  placeholder="搜尋具備技能、證照、作品..." />
           <button type="submit" class="btn btn-success">Search</button>
         </form>
