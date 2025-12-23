@@ -1,8 +1,9 @@
 <?php
-$servername = "localhost:3308";// localhost:3308 柔的資料庫是連結這個
+$servername = "localhost";
 $dbname = "WebGroup12";
 $dbUsername = "root";
 $dbPassword = "";
+
 try {
     // 1. 建立 DSN (Data Source Name) 字串
     $dsn = "mysql:host=$servername;dbname=$dbname;charset=utf8mb4";
