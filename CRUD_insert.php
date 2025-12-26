@@ -38,6 +38,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     //按順序將參數放到execute陣列中
     if ($stmt->execute([$name, $description, $status, $current_account])) {
         $_SESSION['message'] = "新增成功！資料已綁定至帳號 {$current_account}。";
+
+        // 引入剛才寫好的小工具
+        require_once 'mail_helper.php';
+    
+        // 發信給管理員
+        $adminEmail = "zhangzhixuan336@gmail.com";
+        $studentName = $_SESSION['account'];
+        $title = "新成果上傳通知：$studentName";
+        $message = "管理員您好，學生 <b>$studentName</b> 剛剛上傳了新的成果作品，請前往後台審核。";
+    
+    sendSystemMail($adminEmail, $title, $message);
+
     } else {
         $_SESSION['error'] = "新增失敗：" . $stmt->error;
     }
