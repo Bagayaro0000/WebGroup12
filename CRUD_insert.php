@@ -67,12 +67,72 @@ if ($selected_table):
         default: $field_name = '名稱'; break;
     }
 ?>
-<form method="post">
-    <input type="hidden" name="table" value="<?= htmlspecialchars($selected_table) ?>">
-    <?= $field_name ?>: <input type="text" name="name" required><br>
-    簡述: <textarea name="description" rows="3" cols="30"></textarea><br>
-    <button type="submit">儲存</button>
-</form>
+<div class="simple-container">
+    <form method="post" class="minimal-form">
+        <h3 class="title">新增<?= $field_name ?></h3>
+        
+        <input type="hidden" name="table" value="<?= htmlspecialchars($selected_table) ?>">
+        
+        <label><?= $field_name ?></label>
+        <input type="text" name="name" required>
+
+        <label>簡述</label>
+        <textarea name="description" rows="3"></textarea>
+        
+        <button type="submit">儲存</button>
+    </form>
+</div>
+
+<style>
+.simple-container {
+    max-width: 400px;
+    margin: 20px auto;
+    font-family: sans-serif;
+}
+
+.minimal-form {
+    padding: 20px;
+    border: 1px solid #ddd; /* 淺灰色邊框 */
+    border-radius: 8px;      /* 小圓角 */
+    background: #f9f9f9;     /* 極淺灰底色 */
+}
+
+.title {
+    margin: 0 0 15px 0;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.9rem;
+    color: #666;
+}
+
+input[type="text"], textarea {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;      /* 輸入框微圓角 */
+    box-sizing: border-box;  /* 防止寬度溢出 */
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background: #333;        /* 深灰色按鈕 */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #000;        /* 懸停時變黑 */
+}
+</style>
 <?php endif; ?>
 
 <?php include("footer.php"); ?>

@@ -2,40 +2,42 @@
 require_once 'db.php'; //連結資料庫
 
 //根據接收到的關鍵字存取在allResults中
-$keyword = $_GET['keyword'] ?? '';
-$allResults = [];
-
 try {
+    $keyword = $_GET['keyword'] ?? '';
+    $allResults = [];
     //篩選出如果沒有在index搜尋任何關鍵字就會從資料庫中抓取全部status=2的資料一併顯示出來
-    $searchCond = "";//設定空白標籤
+    // $searchCond = "";//設定空白標籤
     $params = [];//空籃子
+    $cond = ""; 
+    if ($keyword !== '') {//篩選如果keyword為空白會維持searchTerm空白，反之則繼續根據搜尋條件去找資料
+        $searchTerm = "%$keyword%";// $searchCond = " AND (account LIKE :kw OR name LIKE :kw OR description LIKE :kw)";
+        $params = [':kw' => $searchTerm];  //把關鍵字裝進空籃子
+        // 這裡的 'LABEL' 之後會在 SQL 中被替換成各表的類別名稱
+        $cond = " AND (account LIKE :kw OR name LIKE :kw OR description LIKE :kw OR 'LABEL' LIKE :kw)";
+    }   //先設定說要去資料庫找關鍵字(kw暫時是空位的代號之後可以讓資訊填入)
 
-    if ($keyword !== '') { //篩選如果keyword為空白會維持searchTerm空白，反之則繼續根據搜尋條件去找資料
-        $searchTerm = "%$keyword%";
-        $searchCond = " AND (account LIKE :kw OR name LIKE :kw OR description LIKE :kw)";
-        //先設定說要去資料庫找關鍵字(kw暫時是空位的代號之後可以讓資訊填入)
-        $params = [':kw' => $searchTerm];
-        //把關鍵字裝進空籃子
-    }
 //將四個資料表union起來這樣可以在搜尋關鍵字時一次去裡面找，
 //searchCond是有點像是判斷有沒有輸入值，有輸入則會執行AND..LIKE的部分，沒有輸入則會只要篩選STATUS=2的就都會出來
-    $sql = "
+$sql = "
         SELECT account AS 姓名, name AS 資料名稱, description AS 簡述, status AS 狀態, '擅長科目' AS 來源類別 FROM proficient_subjects 
-        WHERE status = 2 $searchCond
+        WHERE status = 2 " . str_replace("'LABEL'", "'擅長科目'", $cond) . "
+        
         UNION ALL
         SELECT account AS 姓名, name AS 資料名稱, description AS 簡述, status AS 狀態, '程式語言' AS 來源類別 FROM programming_languages
-        WHERE status = 2 $searchCond
+        WHERE status = 2 " . str_replace("'LABEL'", "'程式語言'", $cond) . "
+       
         UNION ALL
         SELECT account AS 姓名, name AS 資料名稱, description AS 簡述, status AS 狀態, '參與競賽' AS 來源類別 FROM competitions
-        WHERE status = 2 $searchCond
+        WHERE status = 2 " . str_replace("'LABEL'", "'參與競賽'", $cond) . "
+        
         UNION ALL
         SELECT account AS 姓名, name AS 資料名稱, description AS 簡述, status AS 狀態, '取得證照' AS 來源類別 FROM licenses
-        WHERE status = 2 $searchCond
+        WHERE status = 2 " . str_replace("'LABEL'", "'取得證照'", $cond) . "
     ";
-
+    $pdo->setAttribute(PDO::ATTR_EMULATE_PREPARES, true); // 允許重複使用 :kw 參數
     $stmt = $pdo->prepare($sql); //預備去抓資料庫內容
     $stmt->execute($params); //關鍵字去對應KW的空格
-    $allResults = $stmt->fetchAll(); //去資料庫抓完的資料全部轉成陣列印到HTML裡
+    $allResults = $stmt->fetchAll(PDO::FETCH_ASSOC); //去資料庫抓完的資料全部轉成陣列印到HTML裡
 
 } catch (PDOException $e) {
     die("搜尋出錯了: " . $e->getMessage());

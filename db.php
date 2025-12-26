@@ -1,5 +1,5 @@
 <?php
-$servername = "localhost";
+$servername = "localhost:3308";
 $dbname = "WebGroup12";
 $dbUsername = "root";
 $dbPassword = "";

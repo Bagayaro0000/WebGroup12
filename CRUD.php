@@ -4,7 +4,7 @@ if (session_status() == PHP_SESSION_NONE) {
 }
 require_once "header.php";
 require_once "db.php"; // 資料庫連線改成pdo
-
+// 因為要讓不同學生登入後可以新增、編輯自己專屬的資料，所以要確認登入者是誰，這樣在後台也會顯示是誰新增的
 //獲取當前登入的帳號
 $current_account = $_SESSION['account'] ?? null;
 
@@ -18,23 +18,26 @@ if (!$current_account) {
 
 //status對應表
 $status_map = [
-    1 => '未審核',
-    2 => '已審核', // 建議未來可以改成 '已通過'
+    1 => '未審核', //當新增新資料時都會顯示未審核狀態並可以讓老師(管理員)進行審核成已審核或是未通過狀態
+    2 => '已審核', 
     3 => '未通過'
 ];
-
-function execute_account_query($pdo, $table_name, $account) {
-    // 資料隔離
+// 資料隔離:分隔不同account，當登入是不同人時資料表是獨立的
+function execute_account_query($pdo, $table_name, $account) { //設定函式去資料庫的某一張資料表提取之中的account
+    
     $sql = "SELECT id, name, description, status FROM `{$table_name}` WHERE account = :acc";
+    //where account=:acc 是關鍵**資料隔離**，預留:acc空格給後續填空用
+    
     // 使用預備語句 (Prepared Statement) 增加安全性
     $stmt = $pdo->prepare($sql);
-    // 執行與帶入參數
+    // 確認流程完就直接用提取到的account代入:acc這個空格
     $stmt->execute([':acc'=>$account]);
-    
+
     //fetchALL一次取出所有結果
     return $stmt->fetchALL();
 }
-//呼叫$conn改成$pdo
+//四個資料表的$table_name都填入函式中
+
 // 擅長科目查詢
 $proficient_subjects = execute_account_query($pdo, 'proficient_subjects', $current_account);
 
@@ -50,7 +53,7 @@ $licenses = execute_account_query($pdo, 'licenses', $current_account);
 
 <div class="container" style="margin-top: 70px;">
     <div class="row gy-4">
-
+        <!--當新增成功時頁面上方彈跳出視窗 message根據CRUD_insert.php裡面  -->
         <?php if (isset($_SESSION['message'])): ?>
             <div class="alert alert-success mt-3"><?= $_SESSION['message']; unset($_SESSION['message']); ?></div>
         <?php endif; ?>
